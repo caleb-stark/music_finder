@@ -17,9 +17,28 @@ const pool = mysql.createPool({
 });
 
 app.get('/', (req, res) => {
-   res.render('index')
+   res.render('login')
 });
 
+app.get('/home', (req, res) => {
+   res.render('home');
+});
+
+app.get('/search', (req, res) => {
+   res.render('search');
+});
+
+app.get('/movie', (req, res) => {
+   res.render('movie');
+});
+
+app.get('/song', (req, res) => {
+   res.render('song');
+});
+
+app.get('/playlist', (req, res) => {
+   res.render('playlist');
+});
 
 app.listen(3000, () => {
    console.log('server started');
