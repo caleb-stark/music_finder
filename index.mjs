@@ -1,5 +1,7 @@
 import express from 'express';
 import mysql from 'mysql2/promise';
+import bcrypt from 'bcrypt';
+import session from 'express-session';
 
 const app = express();
 app.set("view engine", "ejs");
@@ -16,8 +18,40 @@ const pool = mysql.createPool({
     waitForConnections: true
 });
 
+app.set('trust proxy', 1); 
+app.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: true
+}))
+
+
 app.get('/', (req, res) => {
    res.render('login')
+});
+
+app.post('/login', async (req, res) => {
+   let username = req.body.username;
+   let password = req.body.password;
+
+   let passwordHash = "";
+
+   let sql = "SELECT * FROM users WHERE username = ?";
+   let [rows] = await pool.query(sql, [username]);
+   if (rows.length > 0) {
+      passwordHash = rows[0].password;
+   }
+   let match = await bcrypt.compare(password, passwordHash);
+   if (match) {
+      req.session.authenticated = true;
+      res.render('/home');
+   } else {
+      res.redirect('/');
+   }
+});
+
+app.get('/newUser', (req, res) => {
+   res.render('newUser');
 });
 
 app.get('/home', (req, res) => {
