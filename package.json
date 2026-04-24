@@ -19,4 +19,14 @@
     "mysql2": "^3.22.2",
     "spotify-web-api-node": "^5.0.2"
   }
+    "mysql2": "^3.22.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/caleb-stark/music_finder.git"
+  },
+  "bugs": {
+    "url": "https://github.com/caleb-stark/music_finder/issues"
+  },
+  "homepage": "https://github.com/caleb-stark/music_finder#readme"
 }
