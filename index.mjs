@@ -82,7 +82,7 @@ app.post("/login", async (req, res) => {
   let match = await bcrypt.compare(password, passwordHash);
   if (match) {
     req.session.authenticated = true;
-    res.redirect("/home");
+    res.render("home");
   } else {
     res.redirect("/");
   }
@@ -108,14 +108,15 @@ app.get("/home", isAuthenticated, (req, res) => {
 });
 
 app.post("/searchBySong", isAuthenticated, async (req, res) => {
-  let song = req.query.songName;
+  let song = req.body.songName;
 
   let data = await spotifyApi.searchTracks(song);
-  let songs = data.body.tracks.items;
 
+  console.log(data);
+  let songs = data.body.tracks.items;
   console.log(songs);
 
-  res.render("search", { songs });
+  res.render("search", { songs, movies: []});
 });
 
 app.get("/search", isAuthenticated, (req, res) => {
