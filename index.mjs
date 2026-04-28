@@ -109,14 +109,10 @@ app.get("/home", isAuthenticated, (req, res) => {
 
 app.post("/searchBySong", isAuthenticated, async (req, res) => {
   let song = req.body.songName;
-
   let data = await spotifyApi.searchTracks(song);
-
-  console.log(data);
   let songs = data.body.tracks.items;
-  console.log(songs);
 
-  res.render("search", { songs, movies: []});
+  res.render("search", { songs, movies: [] });
 });
 
 app.get("/search", isAuthenticated, (req, res) => {
