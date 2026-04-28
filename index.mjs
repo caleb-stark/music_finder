@@ -25,6 +25,14 @@ app.use(session({
   saveUninitialized: true
 }))
 
+function isAuthenticated(req, res, next) {
+   if (req.session.authenticated) {
+       next();
+   } else {
+       res.redirect('/');
+   }
+}
+
 
 app.get('/', (req, res) => {
    res.render('login')
@@ -36,15 +44,15 @@ app.post('/login', async (req, res) => {
 
    let passwordHash = "";
 
-   let sql = "SELECT * FROM users WHERE username = ?";
+   let sql = "SELECT * FROM login WHERE UserName = ?";
    let [rows] = await pool.query(sql, [username]);
    if (rows.length > 0) {
-      passwordHash = rows[0].password;
+      passwordHash = rows[0].UserPwd;
    }
    let match = await bcrypt.compare(password, passwordHash);
    if (match) {
       req.session.authenticated = true;
-      res.render('/home');
+      res.redirect('/home');
    } else {
       res.redirect('/');
    }
@@ -54,23 +62,34 @@ app.get('/newUser', (req, res) => {
    res.render('newUser');
 });
 
-app.get('/home', (req, res) => {
+app.post('/newUser', async (req, res) => {
+   let username = req.body.username;
+   let password = req.body.password;
+
+   let passwordHash = await bcrypt.hash(password, 10);
+
+   let sql = "INSERT INTO login (UserName, UserPwd) VALUES (?, ?)";
+   await pool.query(sql, [username, passwordHash]);
+   res.redirect('/');
+});
+
+app.get('/home', isAuthenticated, (req, res) => {
    res.render('home');
 });
 
-app.get('/search', (req, res) => {
+app.get('/search', isAuthenticated, (req, res) => {
    res.render('search');
 });
 
-app.get('/movie', (req, res) => {
+app.get('/movie', isAuthenticated, (req, res) => {
    res.render('movie');
 });
 
-app.get('/song', (req, res) => {
+app.get('/song', isAuthenticated, (req, res) => {
    res.render('song');
 });
 
-app.get('/playlist', (req, res) => {
+app.get('/playlist', isAuthenticated, (req, res) => {
    res.render('playlist');
 });
 
