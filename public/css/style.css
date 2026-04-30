@@ -1,0 +1,17 @@
+.delete-x {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 22px;
+    font-weight: bold;
+    color: red;
+    text-decoration: none;
+}
+.playlist-card {
+    position: relative;
+}
+.max-text {
+    color: red;
+    margin-left: 10px;
+    font-weight: 500;
+}
