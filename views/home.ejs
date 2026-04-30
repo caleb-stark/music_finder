@@ -1,16 +1,15 @@
-<%- include('partials/head') %>
-<%- include('partials/nav') %>
+<%- include('partials/head') %> <%- include('partials/nav') %>
 
 <form action="/searchBySong" method="post">
-    <h2>Search by Song</h2>
-    <input type="text" name="songName" placeholder="song name">
-    <button type="submit">Search</button>
+  <h2>Search by Song</h2>
+  <input type="text" name="songName" placeholder="song name" />
+  <button type="submit">Search</button>
 </form>
 
 <form action="/serachByMovie" method="post">
-    <h2>Search by Movie</h2>
-    <input type="text" name="movieName" placeholder="movie name">
-    <button type="submit">Search</button>
+  <h2>Search by Movie</h2>
+  <input type="text" name="movieName" placeholder="movie name" />
+  <button type="submit">Search</button>
 </form>
 
 <%- include('partials/footer') %>

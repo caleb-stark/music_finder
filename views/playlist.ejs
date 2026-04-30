@@ -1,55 +1,43 @@
-<%- include('partials/head') %>
-<%- include('partials/nav') %>
+<%- include('partials/head') %> <%- include('partials/nav') %>
 <div class="container mt-4">
-    <h1 class="text-center mb-4"><%= playlistName %></h1>
-    <div class="card shadow-sm">
-        <div class="card-body">
-
-            <table class="table table-striped table-hover align-middle">
-                <thead class="table-primary">
-                    <tr>
-                        <th>Song Title</th>
-                        <th>Artist</th>
-                        <th class="text-end">Remove</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <% if (songs.length === 0) { %>
-                        <tr>
-                            <td colspan="3" class="text-center text-muted">
-                                This playlist has no songs yet.
-                            </td>
-                        </tr>
-                    <% } %>
-
-                    <% songs.forEach(song => { %>
-                        <tr>
-                            <td><%= song.song_title %></td>
-                            <td><%= song.artist_name %></td>
-
-                            <td class="text-end">
-                                <a href="/removesong/<%= playlistId %>/<%= song.spotify_id %>"
-                                   class="btn btn-sm btn-danger">
-                                    x
-                                </a>
-                            </td>
-                        </tr>
-                    <% }) %>
-                </tbody>
-            </table>
-
-        </div>
+  <h1 class="text-center mb-4"><%= playlistName %></h1>
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <table class="table table-striped table-hover align-middle">
+        <thead class="table-primary">
+          <tr>
+            <th>Song Title</th>
+            <th>Artist</th>
+            <th class="text-end">Remove</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% if (songs.length === 0) { %>
+          <tr>
+            <td colspan="3" class="text-center text-muted">
+              This playlist has no songs yet.
+            </td>
+          </tr>
+          <% } %> <% songs.forEach(song => { %>
+          <tr>
+            <td><%= song.song_title %></td>
+            <td><%= song.artist_name %></td>
+            <td class="text-end">
+              <a
+                href="/removesong/<%= playlistId %>/<%= song.spotify_id %>"
+                class="btn btn-sm btn-danger"
+              >
+                x
+              </a>
+            </td>
+          </tr>
+          <% }) %>
+        </tbody>
+      </table>
     </div>
-    <div class="text-center mt-4">
-        <a href="/playlist" class="btn btn-secondary">
-            Back to Playlists
-        </a>
-    </div>
-
+  </div>
+  <div class="text-center mt-4">
+    <a href="/playlist" class="btn btn-secondary"> Back to Playlists </a>
+  </div>
 </div>
 <%- include('partials/footer') %>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-</body>
-</html>
