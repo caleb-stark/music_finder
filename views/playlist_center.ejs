@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Playlists</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        .delete-x {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 22px;
+            font-weight: bold;
+            color: red;
+            text-decoration: none;
+        }
+        .playlist-card {
+            position: relative;
+        }
+        .max-text {
+            color: red;
+            margin-left: 10px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+    <%- include('partials/header') %>
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Your Playlists</h1>
+    <div class="row g-4">
+        <% playlists.forEach(p => { %>
+            <div class="col-md-4 col-lg-3">
+                <div class="card playlist-card shadow-sm">
+
+                    <% if (!p.is_default) { %>
+                        <a href="/deleteplaylist/<%= p.playlist_id %>" class="delete-x">×</a>
+                    <% } %>
+
+                    <div class="card-body text-center">
+                        <h5 class="card-title">
+                            <%= p.playlist_name %>
+                            <% if (p.is_default) { %>
+                                <span class="badge bg-primary">Default</span>
+                            <% } %>
+                        </h5>
+
+                        <a href="/playlist/<%= p.playlist_id %>" class="btn btn-primary mt-2">View</a>
+                    </div>
+
+                </div>
+            </div>
+        <% }) %>
+    </div>
+    <div class="text-center mt-4">
+        <% if (playlistCount < 5) { %>
+            <a href="/addplaylist" class="btn btn-success">+ Add Playlist</a>
+        <% } %>
+        <span class="max-text">Max 5 playlists</span>
+    </div>
+</div>
+<%- include('partials/footer') %>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
