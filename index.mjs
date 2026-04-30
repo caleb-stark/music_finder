@@ -92,6 +92,10 @@ app.get("/newUser", (req, res) => {
   res.render("newUser");
 });
 
+app.get("/newUser", (req, res) => {
+  res.render("newUser");
+});
+
 app.post("/newUser", async (req, res) => {
   let username = req.body.username;
   let password = req.body.password;
@@ -112,7 +116,11 @@ app.post("/searchBySong", isAuthenticated, async (req, res) => {
   let data = await spotifyApi.searchTracks(song);
   let songs = data.body.tracks.items;
 
-  res.render("search", { songs, movies: [] });
+  res.render("search", { songs, movies: [] })
+});
+
+app.get("/home", isAuthenticated, (req, res) => {
+  res.render("home");
 });
 
 app.get("/search", isAuthenticated, (req, res) => {
@@ -127,10 +135,111 @@ app.get("/song", isAuthenticated, (req, res) => {
   res.render("song");
 });
 
-app.get("/playlist", isAuthenticated, (req, res) => {
-  res.render("playlist");
+// Show playlist center with all playlists for the user
+app.get("/playlist", isAuthenticated, async (req, res) => {
+  const userId = req.session.user_id;
+  const sql = `
+    SELECT playlist_id, playlist_name, is_default
+    FROM playlists
+    WHERE user_id = ?
+    ORDER BY is_default DESC, playlist_name ASC
+  `;
+  const [playlists] = await pool.query(sql, [userId]);
+  const [countRows] = await pool.query(
+    "SELECT COUNT(*) AS count FROM playlists WHERE user_id = ?",
+    [userId]
+  );
+  const playlistCount = countRows[0].count;
+  res.render("playlist_center", {playlists,playlistCount});
 });
 
-app.listen(3000, () => {
-  console.log("server started");
+// Show add playlist form, but limit to 5 playlists per user
+app.get("/addplaylist", isAuthenticated, async (req, res) => {
+  const userId = req.session.user_id;
+  const [rows] = await pool.query(
+    "SELECT COUNT(*) AS count FROM playlists WHERE user_id = ?",
+    [userId]
+  );
+  if (rows[0].count >= 5) {
+    return res.send("You already have the maximum of 5 playlists.");
+  }
+  res.render("addplaylist");
 });
+
+//add playlist, but limit to 5 playlists per user, and prevent duplicates
+app.post("/addplaylist", isAuthenticated, async (req, res) => {
+  const userId = req.session.user_id;
+  const name = req.body.playlistName;
+  const [rows] = await pool.query(
+    "SELECT COUNT(*) AS count FROM playlists WHERE user_id = ?",
+    [userId]
+  );
+  if (rows[0].count >= 5) {
+    return res.send("You already have 5 playlists.");
+  }
+  await pool.query(
+    "INSERT INTO playlists (user_id, playlist_name, is_default) VALUES (?, ?, 0)",
+    [userId, name]
+  );
+  res.redirect("/playlist");
+});
+
+// View playlist details and songs
+app.get("/playlist/:id", isAuthenticated, async (req, res) => {
+  const playlistId = req.params.id;
+  const [playlistRows] = await pool.query(
+    "SELECT playlist_name FROM playlists WHERE playlist_id = ?",
+    [playlistId]
+  );
+  if (playlistRows.length === 0) {
+    return res.send("Playlist not found.");
+  }
+  const playlistName = playlistRows[0].playlist_name;
+  const [songs] = await pool.query(
+    `SELECT spotify_id, song_title, artist_name
+     FROM playlist_songs
+     WHERE playlist_id = ?`,
+    [playlistId]
+  );
+  res.render("playlist", {playlistId,playlistName,songs});
+});
+
+// Delete playlist, but prevent deletion of default "Favorites" playlist
+app.get("/deleteplaylist/:id", isAuthenticated, async (req, res) => {
+  const playlistId = req.params.id;
+  const [rows] = await pool.query(
+    "SELECT is_default FROM playlists WHERE playlist_id = ?",
+    [playlistId]
+  );
+  if (rows.length === 0 || rows[0].is_default === 1) {
+    return res.send("You cannot delete the default Favorites playlist.");
+  }
+  await pool.query("DELETE FROM playlist_songs WHERE playlist_id = ?", [
+    playlistId,
+  ]);
+  await pool.query("DELETE FROM playlists WHERE playlist_id = ?", [
+    playlistId,
+  ]);
+  res.redirect("/playlist");
+});
+
+// Add song to playlist, only allows 50 songs per playlist, and prevents duplicates with INSERT IGNORE
+app.post("/addToPlaylist", isAuthenticated, async (req, res) => {
+  const { playlist_id, spotify_id, song_title, artist_name } = req.body;
+  const [rows] = await pool.query(
+    "SELECT COUNT(*) AS count FROM playlist_songs WHERE playlist_id = ?",
+    [playlist_id]
+  );
+  if (rows[0].count >= 50) {
+    return res.send("This playlist already has 50 songs.");
+  }
+  await pool.query(
+    `INSERT IGNORE INTO playlist_songs 
+     (playlist_id, spotify_id, song_title, artist_name)
+     VALUES (?, ?, ?, ?)`,
+    [playlist_id, spotify_id, song_title, artist_name]
+  );
+  res.redirect("/playlist/" + playlist_id);
+});
+
+app.listen(3000, () => {console.log("server started");});
