@@ -1,0 +1,77 @@
+/* Movie Search */
+.movie-search {
+  display: flex;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.movie-search input {
+  padding: 0.5rem 1rem;
+  width: 300px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px 0 0 4px;
+}
+
+.movie-search button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-left: none;
+  background-color: #333;
+  color: #fff;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+}
+
+.movie-search button:hover {
+  background-color: #555;
+}
+
+/* Movie Card */
+.movie-card {
+  display: flex;
+  gap: 2rem;
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+}
+
+.movie-poster {
+  width: 180px;
+  min-width: 180px;
+  border-radius: 4px;
+  object-fit: cover;
+}
+
+.movie-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.movie-title {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+.movie-year {
+  margin: 0;
+  color: #666;
+  font-size: 1rem;
+}
+
+.movie-plot {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.movie-error {
+  text-align: center;
+  color: red;
+  margin-top: 2rem;
+}

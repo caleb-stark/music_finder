@@ -1,0 +1,28 @@
+<%- include('partials/head') %>
+
+<section class="movie-search">
+  <form action="/movie" method="GET">
+    <input type="text" name="t" placeholder="Search for a movie..." value="<%= movie ? movie.Title : '' %>">
+    <button type="submit">Search</button>
+  </form>
+</section>
+
+<% if (error) { %>
+  <p class="movie-error"><%= error %></p>
+<% } else if (movie) { %>
+  <div class="movie-card">
+        movie: <%=movie%>
+    <img
+      class="movie-poster"
+      src="<%= movie.Poster !== 'N/A' ? movie.Poster : 'img/no-poster.png' %>"
+      alt="<%= movie.Title %> poster"
+    >
+    <div class="movie-info">
+      <h2 class="movie-title"><%= movie.Title %></h2>
+      <p class="movie-year"><%= movie.Year %></p>
+      <p class="movie-plot"><%= movie.Plot %></p>
+    </div>
+  </div>
+<% } %>
+
+<%- include('partials/footer') %>
