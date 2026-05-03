@@ -1,0 +1,32 @@
+<%- include('partials/head') %> <%- include('partials/nav') %>
+<div class="container mt-4">
+  <h1 class="text-center mb-4">Your Playlists</h1>
+  <div class="row g-4">
+    <% playlists.forEach(p=> { %>
+    <div class="col-md-4 col-lg-3">
+      <div class="card playlist-card shadow-sm">
+        <% if (!p.is_default) { %>
+        <a href="/deleteplaylist/<%= p.playlist_id %>" class="delete-x">×</a>
+        <% } %>
+        <div class="card-body text-center">
+          <h5 class="card-title">
+            <%= p.playlist_name %> <% if (p.is_default) { %>
+            <span class="badge bg-primary">Default</span>
+            <% } %>
+          </h5>
+          <a href="/playlist/<%= p.playlist_id %>" class="btn btn-primary mt-2"
+            >View</a
+          >
+        </div>
+      </div>
+    </div>
+    <% }) %>
+  </div>
+  <div class="text-center mt-4">
+    <% if (playlistCount < 5) { %>
+    <a href="/addplaylist" class="btn btn-success">+ Add Playlist</a>
+    <% } %>
+    <span class="max-text">Max 5 playlists</span>
+  </div>
+</div>
+<%- include('partials/footer') %>

@@ -1,0 +1,27 @@
+<%- include('partials/head') %> <%- include('partials/nav') %>
+
+<h1>Search Results</h1>
+
+<% if(songs && songs.length){ %>
+<section>
+  <h2>Songs</h2>
+  <% songs.forEach(song => { %>
+  <div class="result-card">
+    <h3><%= song.name %></h3>
+    <% song.artists.forEach(artist => { %>
+    <p>Artist: <%= artist.name %></p>
+    <% }) %>
+  </div>
+  <% }) %>
+</section>
+<% } %> <% if(movies && movies.length){ %>
+<section>
+  <h2>Movies</h2>
+  <% movies.forEach(movie => { %>
+  <div class="result-card">
+    <h3><%= movie.title %></h3>
+    <p>Director: <%= movie.director %></p>
+  </div>
+  <% }) %>
+</section>
+<% } %> <%- include('partials/footer') %>
