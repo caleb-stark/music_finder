@@ -117,26 +117,34 @@ app.post("/searchBySong", isAuthenticated, async (req, res) => {
   let data = await spotifyApi.searchTracks(song);
   let songs = data.body.tracks.items;
 
-  res.render("search", { songs, movies: [] });
+  res.render("songResults", { songs });
+});
+
+app.post("/searchByMovie", isAuthenticated, async (req, res) => {
+  try {
+    let movieTitle = req.body.movieName;
+    const response = await fetch(`http://www.omdbapi.com/?t=${movieTitle}&apikey=${process.env.OMDB_API_KEY}`);
+    const data = await response.json();
+    console.log(data);
+
+    res.render("movie.ejs", { movie: data, error: null });
+  } catch (err) {
+    res.render("movie.ejs", { movie: null, error: "Failed to fetch movie data." });
+  }
 });
 
 app.get("/home", isAuthenticated, (req, res) => {
   res.render("home");
 });
 
-app.get("/search", isAuthenticated, (req, res) => {
-  res.render("search");
-});
-
-
 app.get("/movie", async (req, res) => {
   try {
     let movieId = req.query.id || "tt12593682";
-     const response = await fetch(`https://www.omdbapi.com/?i=${movieId}&apikey=${process.env.OMDB_API_KEY}`);
-  const data = await response.json();
-  console.log(data);
+    const response = await fetch(`https://www.omdbapi.com/?i=${movieId}&apikey=${process.env.OMDB_API_KEY}`);
+    const data = await response.json();
+    console.log(data);
 
-  res.render("movie.ejs", { movie: data, error: null });
+    res.render("movie.ejs", { movie: data, error: null });
   } catch (err) {
     res.render("movie.ejs", { movie: null, error: "Failed to fetch movie data." });
   }
