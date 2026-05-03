@@ -127,8 +127,18 @@ app.get("/search", isAuthenticated, (req, res) => {
   res.render("search");
 });
 
-app.get("/movie", isAuthenticated, (req, res) => {
-  res.render("movie");
+
+app.get("/movie", async (req, res) => {
+  try {
+    let movieId = req.query.id || "tt12593682";
+     const response = await fetch(`https://www.omdbapi.com/?i=${movieId}&apikey=${process.env.OMDB_API_KEY}`);
+  const data = await response.json();
+  console.log(data);
+
+  res.render("movie.ejs", { movie: data, error: null });
+  } catch (err) {
+    res.render("movie.ejs", { movie: null, error: "Failed to fetch movie data." });
+  }
 });
 
 app.get("/song", isAuthenticated, (req, res) => {
