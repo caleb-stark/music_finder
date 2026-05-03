@@ -32,15 +32,12 @@ app.get("/search", (req, res) => {
 
 app.get("/movie", async (req, res) => {
   try {
-     const response = await fetch(
-    "https://www.omdbapi.com/?i=tt3896198&apikey=310c8a46",
-  );
+    let movieId = req.query.id || "tt12593682";
+     const response = await fetch(`https://www.omdbapi.com/?i=${movieId}&apikey=${process.env.OMDB_API_KEY}`);
   const data = await response.json();
   console.log(data);
 
-  let movieData = data.Title;
-
-  res.render("movie.ejs", { movie: movieData, error: null });
+  res.render("movie.ejs", { movie: data, error: null });
   } catch (err) {
     res.render("movie.ejs", { movie: null, error: "Failed to fetch movie data." });
   }
