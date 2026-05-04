@@ -5,7 +5,9 @@
 <section>
   <h2>Songs</h2>
   <% songs.forEach(song => { %>
-  <div class="result-card" data-song-id="<%=song.id%>">
+  <div class="result-card card p-3 mb-3 shadow-sm"
+      data-song-id="<%= song.id %>"
+      data-song-data="<%= encodeURIComponent(JSON.stringify(song)) %>">
     <h3><%= song.name %></h3>
     <% song.artists.forEach(artist => { %>
     <p>Artist: <%= artist.name %></p>
@@ -21,8 +23,9 @@
     });
 
     function openSongPage() {
-        const songId = this.dataset.songId;
-        window.location.href = `/song?id=${songId}`;
+      const songId = this.dataset.songId;
+      const songData = this.dataset.songData;
+      window.location.href = `/song?data=${encodeURIComponent(songData)}`;
     }
 </script>
 

@@ -113,11 +113,15 @@ app.get("/home", isAuthenticated, (req, res) => {
 });
 
 app.post("/searchBySong", isAuthenticated, async (req, res) => {
-  let song = req.body.songName;
-  let data = await spotifyApi.searchTracks(song);
-  let songs = data.body.tracks.items;
-
-  res.render("songResults", { songs });
+  try {
+    let song = req.body.songName;
+    let data = await spotifyApi.searchTracks(song);
+    let songs = data.body.tracks.items;
+    res.render("songResults", { songs });
+  } catch (err) {
+    console.log("searchBySong error:", err.statusCode);
+    res.render("songResults", { songs: [], error: "Search failed, please try again later." });
+  }
 });
 
 app.post("/searchByMovie", isAuthenticated, async (req, res) => {
@@ -151,19 +155,22 @@ app.get("/movie", async (req, res) => {
 });
 
 app.get("/song", isAuthenticated, async (req, res) => {
-  let songId = req.query.id;
-  const track = await spotifyApi.getTrack(songId);
+  try {
+    const track = JSON.parse(decodeURIComponent(req.query.data));
 
-  const userId = req.session.user_id;
-  const sql = `
-    SELECT playlist_id, playlist_name, is_default
-    FROM playlists
-    WHERE user_id = ?
-    ORDER BY is_default DESC, playlist_name ASC
-  `;
-  const [playlists] = await pool.query(sql, [userId]);
-
-  res.render("song.ejs", { track: track.body, playlists });
+    const userId = req.session.user_id;
+    const sql = `
+      SELECT playlist_id, playlist_name, is_default
+      FROM playlists
+      WHERE user_id = ?
+      ORDER BY is_default DESC, playlist_name ASC
+    `;
+    const [playlists] = await pool.query(sql, [userId]);
+    res.render("song.ejs", { track, playlists, error: null });
+  } catch (err) {
+    console.log("song error:", err);
+    res.render("song.ejs", { track: null, playlists: [], error: "Failed to load song." });
+  }
 });
 
 // Show playlist center with all playlists for the user
