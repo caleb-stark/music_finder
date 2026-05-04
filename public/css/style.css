@@ -75,3 +75,17 @@
   color: red;
   margin-top: 2rem;
 }
+
+.result-card {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 12px;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+
+.result-card:hover {
+  border-color: #888;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
