@@ -123,13 +123,45 @@ app.post("/searchBySong", isAuthenticated, async (req, res) => {
 app.post("/searchByMovie", isAuthenticated, async (req, res) => {
   try {
     let movieTitle = req.body.movieName;
-    const response = await fetch(`http://www.omdbapi.com/?t=${movieTitle}&apikey=${process.env.OMDB_API_KEY}`);
+    const response = await fetch(
+      `http://www.omdbapi.com/?t=${movieTitle}&apikey=${process.env.OMDB_API_KEY}`
+    );
     const data = await response.json();
     console.log(data);
-
-    res.render("movie.ejs", { movie: data, error: null });
+    if (data.Response === "False") {
+      return res.render("movie.ejs", { movie: null, songs: [], playlists: [], error: "Movie not found." });
+    }
+    const imdbId = data.imdbID;
+    console.log("IMDB ID:", imdbId);
+    const [rows] = await pool.query(
+      `SELECT spotify_id FROM movie_songs WHERE imdb_id = ?`,
+      [imdbId]
+    );
+    const songs = [];
+    for (const row of rows) {
+      try {
+        const trackData = await spotifyApi.getTrack(row.spotify_id);
+        const track = trackData.body;
+        songs.push({
+          spotify_id: row.spotify_id,
+          title: track.name,
+          artist: track.artists.map(a => a.name).join(", "),
+          albumArt: track.album.images[0]?.url || null,
+          preview: track.preview_url
+        });
+      } catch (err) {
+        console.error("Spotify fetch failed for", row.spotify_id);
+      }
+    }
+    const userId = req.session.user_id;
+    const [playlists] = await pool.query(
+      "SELECT playlist_id, playlist_name FROM playlists WHERE user_id = ?",
+      [userId]
+    );
+    res.render("movie.ejs", { movie: data, songs, playlists, error: null });
   } catch (err) {
-    res.render("movie.ejs", { movie: null, error: "Failed to fetch movie data." });
+    console.error(err);
+    res.render("movie.ejs", { movie: null, songs: [], playlists: [], error: "Failed to fetch movie data." });
   }
 });
 
@@ -140,13 +172,40 @@ app.get("/home", isAuthenticated, (req, res) => {
 app.get("/movie", async (req, res) => {
   try {
     let movieId = req.query.id || "tt12593682";
-    const response = await fetch(`https://www.omdbapi.com/?i=${movieId}&apikey=${process.env.OMDB_API_KEY}`);
+    const response = await fetch(
+      `https://www.omdbapi.com/?i=${movieId}&apikey=${process.env.OMDB_API_KEY}`
+    );
     const data = await response.json();
     console.log(data);
-
-    res.render("movie.ejs", { movie: data, error: null });
+    const [rows] = await pool.query(
+      `SELECT spotify_id FROM movie_songs WHERE imdb_id = ?`,
+      [movieId]
+    );
+    const songs = [];
+    for (const row of rows) {
+      try {
+        const trackData = await spotifyApi.getTrack(row.spotify_id);
+        const track = trackData.body;
+        songs.push({
+          spotify_id: row.spotify_id,
+          title: track.name,
+          artist: track.artists.map(a => a.name).join(", "),
+          albumArt: track.album.images[0]?.url || null,
+          preview: track.preview_url
+        });
+      } catch (err) {
+        console.error("Spotify fetch failed for", row.spotify_id);
+      }
+    }
+    const userId = req.session.user_id;
+    const [playlists] = await pool.query(
+      "SELECT playlist_id, playlist_name FROM playlists WHERE user_id = ?",
+      [userId]
+    );
+    res.render("movie.ejs", { movie: data, songs, playlists, error: null });
   } catch (err) {
-    res.render("movie.ejs", { movie: null, error: "Failed to fetch movie data." });
+    console.error(err);
+    res.render("movie.ejs", { movie: null, songs: [], playlists: [], error: "Failed to fetch movie data." });
   }
 });
 
@@ -259,6 +318,30 @@ app.post("/addToPlaylist", isAuthenticated, async (req, res) => {
     [playlist_id, spotify_id, song_title, artist_name]
   );
   res.redirect("/playlist/" + playlist_id);
+});
+
+// Delete a single song from a playlist
+app.get("/removesong/:playlistId/:spotifyId", isAuthenticated, async (req, res) => {
+  const { playlistId, spotifyId } = req.params;
+  await pool.query(
+    "DELETE FROM playlist_songs WHERE playlist_id = ? AND spotify_id = ?",
+    [playlistId, spotifyId]
+  );
+  res.redirect("/playlist/" + playlistId);
+});
+
+//deleted mult
+app.post("/playlist/:id/delete-multiple", isAuthenticated, async (req, res) => {
+  const playlistId = req.params.id;
+  const spotifyIds = req.body.spotifyIds;
+  if (!spotifyIds) return res.redirect("/playlist/" + playlistId);
+  const ids = Array.isArray(spotifyIds) ? spotifyIds : [spotifyIds];
+  await pool.query(
+    `DELETE FROM playlist_songs 
+     WHERE playlist_id = ? AND spotify_id IN (${ids.map(() => "?").join(",")})`,
+    [playlistId, ...ids]
+  );
+  res.redirect("/playlist/" + playlistId);
 });
 
 app.listen(3000, () => {console.log("server started");});

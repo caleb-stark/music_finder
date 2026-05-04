@@ -1,22 +1,66 @@
 <%- include('partials/head') %>
 
-<% if (error) { %>
-  <p class="movie-error"><%= error %></p>
-<% } else if (movie) { %>
-  <div class="movie-card">
-    <img
-      class="movie-poster"
-      src="<%= movie.Poster !== 'N/A' ? movie.Poster : 'img/no-poster.png' %>"
-      alt="<%= movie.Title %> poster"
-    >
-    <div class="movie-info">
-      <h2 class="movie-title"><%= movie.Title %></h2>
-      <p class="movie-year"><%= movie.Year %></p>
-      <p class="movie-genre"><%= movie.Genre %></p>
-      <p class="movie-rated"><%= movie.Rated %></p>
-      <p class="movie-plot"><%= movie.Plot %></p>
+<div class="container mt-4">
+  <% if (error) { %>
+    <div class="alert alert-danger"><%= error %></div>
+  <% } %>
+  <% if (movie) { %>
+    <div class="card mb-4 p-3 d-flex flex-row gap-3">
+      <img
+        src="<%= movie.Poster !== 'N/A' ? movie.Poster : '/img/no-poster.png' %>"
+        alt="Poster"
+        class="img-fluid"
+        style="max-width: 200px; border-radius: 8px;"
+      >
+      <div>
+        <h2><%= movie.Title %></h2>
+        <p><strong>Year:</strong> <%= movie.Year %></p>
+        <p><strong>Genre:</strong> <%= movie.Genre %></p>
+        <p><strong>Rated:</strong> <%= movie.Rated %></p>
+        <p><%= movie.Plot %></p>
+      </div>
     </div>
-  </div>
-<% } %>
-
+    <h3>Songs in this Movie</h3>
+    <% if (songs && songs.length > 0) { %>
+      <ul class="list-group">
+        <% songs.forEach(song => { %>
+          <li class="list-group-item d-flex flex-column gap-2">
+            <div class="d-flex align-items-center gap-3">
+              <% if (song.albumArt) { %>
+                <img
+                  src="<%= song.albumArt %>"
+                  alt="Album Art"
+                  style="width: 80px; height: 80px; border-radius: 6px; object-fit: cover;"
+                >
+              <% } %>
+              <div>
+                <strong><%= song.title %></strong><br>
+                <span><%= song.artist %></span>
+              </div>
+            </div>
+            <% if (song.preview) { %>
+              <audio controls src="<%= song.preview %>" class="mt-2"></audio>
+            <% } %>
+            <form action="/addToPlaylist" method="POST" class="d-flex gap-2 mt-2">
+              <input type="hidden" name="spotify_id" value="<%= song.spotify_id %>">
+              <input type="hidden" name="song_title" value="<%= song.title %>">
+              <input type="hidden" name="artist_name" value="<%= song.artist %>">
+              <select name="playlist_id" class="form-select w-auto" required>
+                <option value="">Select Playlist</option>
+                <% playlists.forEach(p => { %>
+                  <option value="<%= p.playlist_id %>"><%= p.playlist_name %></option>
+                <% }) %>
+              </select>
+              <button type="submit" class="btn btn-primary">
+                + Add to Playlist
+              </button>
+            </form>
+          </li>
+        <% }) %>
+      </ul>
+    <% } else { %>
+      <p class="text-muted">No songs linked to this movie yet.</p>
+    <% } %>
+  <% } %>
+</div>
 <%- include('partials/footer') %>
