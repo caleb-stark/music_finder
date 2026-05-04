@@ -150,8 +150,20 @@ app.get("/movie", async (req, res) => {
   }
 });
 
-app.get("/song", isAuthenticated, (req, res) => {
-  res.render("song");
+app.get("/song", isAuthenticated, async (req, res) => {
+  let songId = req.query.id;
+  const track = await spotifyApi.getTrack(songId);
+
+  const userId = req.session.user_id;
+  const sql = `
+    SELECT playlist_id, playlist_name, is_default
+    FROM playlists
+    WHERE user_id = ?
+    ORDER BY is_default DESC, playlist_name ASC
+  `;
+  const [playlists] = await pool.query(sql, [userId]);
+
+  res.render("song.ejs", { track: track.body, playlists });
 });
 
 // Show playlist center with all playlists for the user

@@ -5,7 +5,7 @@
 <section>
   <h2>Songs</h2>
   <% songs.forEach(song => { %>
-  <div class="result-card">
+  <div class="result-card" data-song-id="<%=song.id%>">
     <h3><%= song.name %></h3>
     <% song.artists.forEach(artist => { %>
     <p>Artist: <%= artist.name %></p>
@@ -13,5 +13,17 @@
   </div>
   <% }) %>
 </section>
+
+<script>
+    let songs = document.querySelectorAll(".result-card");
+    songs.forEach(song => {
+        song.addEventListener("click", openSongPage);
+    });
+
+    function openSongPage() {
+        const songId = this.dataset.songId;
+        window.location.href = `/song?id=${songId}`;
+    }
+</script>
 
 <%- include('partials/footer') %>
