@@ -1,0 +1,34 @@
+<%- include('partials/head') %>
+<%- include('partials/nav') %>
+
+
+<form action="/addToPlaylist" method="POST">
+    <input type="hidden" name="spotify_id" value="<%= track.id %>">
+    <input type="hidden" name="song_title" value="<%= track.name %>">
+    <input type="hidden" name="artist_name" value="<%= track.artists[0].name %>">
+
+    <div class="movie-card">
+        <img class="movie-poster" src="<%=track.album.images[0].url%>"
+                alt="<%= track.name %> album cover">
+        <div class="movie-info">
+            <h2 class="movie-title">
+                <%= track.name %>
+            </h2>
+            <p class="movie-genre">
+                <%= track.artists.map(a => a.name).join(", ") %>
+            </p>
+            <p class="movie-year">
+                Release Date: <%= track.album.release_date %>
+            </p>
+            <select name="playlist_id">
+                <% for (let playlist of playlists) { %>
+                    <option value="<%=playlist.playlist_id%>"><%=playlist.playlist_name%></option>
+                <% } %>
+            </select>
+            <button class="btn btn-secondary">Add to Playlist</button>
+        </div>
+    </div>
+</form>
+
+
+<%- include('partials/footer') %>
