@@ -89,6 +89,57 @@ app.post("/login", async (req, res) => {
   }
 });
 
+app.get("/account", isAuthenticated, async (req, res) => {
+  const userId = req.session.user_id;
+  const [rows] = await pool.query(
+    "SELECT UserName, FirstName, LastName FROM login WHERE UserId = ?",
+    [userId],
+  );
+
+  if (rows.length === 0) {
+    return res.redirect("/");
+  }
+
+  const account = rows[0];
+  const message = req.query.success ? "Account updated successfully." : "";
+  let error = "";
+
+  if (req.query.error === "required") {
+    error = "Username is required.";
+  } else if (req.query.error === "taken") {
+    error = "That username is already in use.";
+  }
+
+  res.render("account.ejs", { account, message, error });
+});
+
+app.post("/account", isAuthenticated, async (req, res) => {
+  const userId = req.session.user_id;
+  const username = (req.body.username || "").trim();
+  const firstName = (req.body.firstName || "").trim();
+  const lastName = (req.body.lastName || "").trim();
+
+  if (!username) {
+    return res.redirect("/account?error=required");
+  }
+
+  const [existingUser] = await pool.query(
+    "SELECT UserId FROM login WHERE UserName = ? AND UserId <> ?",
+    [username, userId],
+  );
+
+  if (existingUser.length > 0) {
+    return res.redirect("/account?error=taken");
+  }
+
+  await pool.query(
+    "UPDATE login SET UserName = ?, FirstName = ?, LastName = ? WHERE UserId = ?",
+    [username, firstName || null, lastName || null, userId],
+  );
+
+  res.redirect("/account?success=1");
+});
+
 app.get("/newUser", (req, res) => {
   res.render("newUser");
 });
@@ -278,4 +329,4 @@ app.post("/addToPlaylist", isAuthenticated, async (req, res) => {
   res.redirect("/playlist/" + playlist_id);
 });
 
-app.listen(3000, () => {console.log("server started");});
+app.listen(3001, () => {console.log("server started");});
