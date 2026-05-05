@@ -176,7 +176,6 @@ app.post("/searchByMovie", isAuthenticated, async (req, res) => {
     let movieTitle = req.body.movieName;
     const response = await fetch(`http://www.omdbapi.com/?t=${movieTitle}&apikey=${process.env.OMDB_API_KEY}`);
     const data = await response.json();
-
     res.render("movieResults", { movie: data, error: null });
   } catch (err) {
     res.render("movieResults", { movie: null, error: "Failed to fetch movie data." });
@@ -186,7 +185,6 @@ app.post("/searchByMovie", isAuthenticated, async (req, res) => {
 app.get("/song", isAuthenticated, async (req, res) => {
   try {
     const track = JSON.parse(decodeURIComponent(req.query.data));
-
     const userId = req.session.user_id;
     const sql = `
       SELECT playlist_id, playlist_name, is_default
@@ -194,11 +192,18 @@ app.get("/song", isAuthenticated, async (req, res) => {
       WHERE user_id = ?
       ORDER BY is_default DESC, playlist_name ASC
     `;
+    const movie_sql = `SELECT imdb_id FROM movie_songs WHERE spotify_id = ?`;
+
     const [playlists] = await pool.query(sql, [userId]);
-    res.render("song.ejs", { track, playlists, error: null });
+    const [movieID] = await pool.query(movie_sql, [track.id]);
+
+    const response = await fetch(`http://www.omdbapi.com/?i=${movieID[0].imdb_id}&apikey=${process.env.OMDB_API_KEY}`);
+    const data = await response.json();
+
+    res.render("song.ejs", { track, playlists, movie: data, error: null });
   } catch (err) {
     console.log("song error:", err);
-    res.render("song.ejs", { track: null, playlists: [], error: "Failed to load song." });
+    res.render("song.ejs", { track: null, playlists: [], movie: [], error: "Failed to load song." });
   }
 });
 
@@ -325,4 +330,4 @@ app.post("/playlist/:id/delete-multiple", isAuthenticated, async (req, res) => {
   res.redirect("/playlist/" + playlistId);
 });
 
-app.listen(3000, () => {console.log("server started");});
+app.listen(3001, () => {console.log("server started");});
