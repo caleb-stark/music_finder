@@ -202,7 +202,6 @@ app.get("/song", isAuthenticated, async (req, res) => {
   }
 });
 
-// Show playlist center with all playlists for the user
 app.get("/playlist", isAuthenticated, async (req, res) => {
   const userId = req.session.user_id;
   const sql = `
@@ -220,7 +219,6 @@ app.get("/playlist", isAuthenticated, async (req, res) => {
   res.render("playlist_center", {playlists,playlistCount});
 });
 
-// Show add playlist form, but limit to 5 playlists per user
 app.get("/addplaylist", isAuthenticated, async (req, res) => {
   const userId = req.session.user_id;
   const [rows] = await pool.query(
@@ -233,7 +231,6 @@ app.get("/addplaylist", isAuthenticated, async (req, res) => {
   res.render("addplaylist");
 });
 
-//add playlist, but limit to 5 playlists per user, and prevent duplicates
 app.post("/addplaylist", isAuthenticated, async (req, res) => {
   const userId = req.session.user_id;
   const name = req.body.playlistName;
@@ -251,7 +248,6 @@ app.post("/addplaylist", isAuthenticated, async (req, res) => {
   res.redirect("/playlist");
 });
 
-// View playlist details and songs
 app.get("/playlist/:id", isAuthenticated, async (req, res) => {
   const playlistId = req.params.id;
   const [playlistRows] = await pool.query(
@@ -271,7 +267,6 @@ app.get("/playlist/:id", isAuthenticated, async (req, res) => {
   res.render("playlist", {playlistId,playlistName,songs});
 });
 
-// Delete playlist, but prevent deletion of default "Favorites" playlist
 app.get("/deleteplaylist/:id", isAuthenticated, async (req, res) => {
   const playlistId = req.params.id;
   const [rows] = await pool.query(
@@ -290,7 +285,6 @@ app.get("/deleteplaylist/:id", isAuthenticated, async (req, res) => {
   res.redirect("/playlist");
 });
 
-// Add song to playlist, only allows 50 songs per playlist, and prevents duplicates with INSERT IGNORE
 app.post("/addToPlaylist", isAuthenticated, async (req, res) => {
   const { playlist_id, spotify_id, song_title, artist_name } = req.body;
   const [rows] = await pool.query(
@@ -309,4 +303,26 @@ app.post("/addToPlaylist", isAuthenticated, async (req, res) => {
   res.redirect("/playlist/" + playlist_id);
 });
 
-app.listen(3001, () => {console.log("server started");});
+app.get("/removesong/:playlistId/:spotifyId", isAuthenticated, async (req, res) => {
+  const { playlistId, spotifyId } = req.params;
+  await pool.query(
+    "DELETE FROM playlist_songs WHERE playlist_id = ? AND spotify_id = ?",
+    [playlistId, spotifyId]
+  );
+  res.redirect("/playlist/" + playlistId);
+});
+
+app.post("/playlist/:id/delete-multiple", isAuthenticated, async (req, res) => {
+  const playlistId = req.params.id;
+  const spotifyIds = req.body.spotifyIds;
+  if (!spotifyIds) return res.redirect("/playlist/" + playlistId);
+  const ids = Array.isArray(spotifyIds) ? spotifyIds : [spotifyIds];
+  await pool.query(
+    `DELETE FROM playlist_songs 
+     WHERE playlist_id = ? AND spotify_id IN (${ids.map(() => "?").join(",")})`,
+    [playlistId, ...ids]
+  );
+  res.redirect("/playlist/" + playlistId);
+});
+
+app.listen(3000, () => {console.log("server started");});
