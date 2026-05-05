@@ -129,7 +129,6 @@ app.post("/searchByMovie", isAuthenticated, async (req, res) => {
     let movieTitle = req.body.movieName;
     const response = await fetch(`http://www.omdbapi.com/?t=${movieTitle}&apikey=${process.env.OMDB_API_KEY}`);
     const data = await response.json();
-    console.log(data);
 
     res.render("movie.ejs", { movie: data, error: null });
   } catch (err) {
@@ -141,12 +140,11 @@ app.get("/home", isAuthenticated, (req, res) => {
   res.render("home");
 });
 
-app.get("/movie", async (req, res) => {
+app.get("/movie", isAuthenticated, async (req, res) => {
   try {
     let movieId = req.query.id || "tt12593682";
     const response = await fetch(`https://www.omdbapi.com/?i=${movieId}&apikey=${process.env.OMDB_API_KEY}`);
     const data = await response.json();
-    console.log(data);
 
     res.render("movie.ejs", { movie: data, error: null });
   } catch (err) {

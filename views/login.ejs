@@ -1,9 +1,11 @@
 <%- include('partials/head') %>
 
-<form action="/login" method="post">
-  Username: <input type="text" name="username" /><br />
+<form action="/login" method="post" id="loginForm">
+  Username: <input type="text" name="username" id="username" /><br />
 
-  Password: <input type="password" name="password" /><br />
+  Password: <input type="password" name="password" id="password" /><br />
+
+  <p id="loginWarning" class="warning-message"></p>
 
   <a href="/newUser">Create Account</a>
 
