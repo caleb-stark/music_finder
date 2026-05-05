@@ -158,7 +158,6 @@ app.post("/newUser", async (req, res) => {
   let sql = "INSERT INTO login (UserName, UserPwd) VALUES (?, ?)";
   let [result] = await pool.query(sql, [username, passwordHash]);
   let userId = result.insertId;
-  //default playlist
   await pool.query(
     "INSERT INTO playlists (user_id, playlist_name, is_default) VALUES (?, 'Favorites', 1)",
     [userId]
@@ -166,9 +165,6 @@ app.post("/newUser", async (req, res) => {
   res.redirect("/");
 });
 
-// app.get("/home", isAuthenticated, (req, res) => {
-//   res.render("home");
-// });
 app.get("/home", isAuthenticated, async (req, res) => {
   const [movies] = await pool.query(
     "SELECT DISTINCT imdb_id, movie_name FROM movie_songs ORDER BY movie_name ASC"
