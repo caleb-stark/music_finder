@@ -18,6 +18,26 @@
       <p class="movie-plot"><%= movie.Plot %></p>
     </div>
   </div>
+
+  <h4 class="text-center">Songs in this Movie</h4>
+
+  <div class="container" style="max-width: 600px;">
+    <% for (let song of songs) { %>
+      <div class="card mb-3 shadow-sm">
+        <div class="row g-0 align-items-center">
+          <div class="col-auto">
+            <img src="<%= song.album_art_url %>" 
+                alt="<%= song.song_title %> album art"
+                style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px 0 0 8px;">
+          </div>
+          <div class="col p-3">
+            <h6 class="mb-1 fw-bold"><%= song.song_title %></h6>
+            <p class="mb-0 text-muted small"><%= song.artist_name %></p>
+          </div>
+        </div>
+      </div>
+    <% } %>
+  </div>
 <% } %>
 
 <%- include('partials/footer') %>

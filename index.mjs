@@ -151,7 +151,13 @@ app.post("/newUser", async (req, res) => {
   let passwordHash = await bcrypt.hash(password, 10);
 
   let sql = "INSERT INTO login (UserName, UserPwd) VALUES (?, ?)";
-  await pool.query(sql, [username, passwordHash]);
+  let [result] = await pool.query(sql, [username, passwordHash]);
+  let userId = result.insertId;
+  //default playlist
+  await pool.query(
+    "INSERT INTO playlists (user_id, playlist_name, is_default) VALUES (?, 'Favorites', 1)",
+    [userId]
+  );
   res.redirect("/");
 });
 
@@ -176,9 +182,13 @@ app.post("/searchByMovie", isAuthenticated, async (req, res) => {
     let movieTitle = req.body.movieName;
     const response = await fetch(`http://www.omdbapi.com/?t=${movieTitle}&apikey=${process.env.OMDB_API_KEY}`);
     const data = await response.json();
-    res.render("movieResults", { movie: data, error: null });
+
+    let sql = `SELECT * FROM movie_songs WHERE imdb_id = ?`
+    const [rows] = await pool.query(sql, [data.imdbID]);
+
+    res.render("movieResults", { movie: data, songs: rows, error: null });
   } catch (err) {
-    res.render("movieResults", { movie: null, error: "Failed to fetch movie data." });
+    res.render("movieResults", { movie: null, songs: null, error: "Failed to fetch movie data." });
   }
 });
 
