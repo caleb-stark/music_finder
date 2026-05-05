@@ -151,7 +151,13 @@ app.post("/newUser", async (req, res) => {
   let passwordHash = await bcrypt.hash(password, 10);
 
   let sql = "INSERT INTO login (UserName, UserPwd) VALUES (?, ?)";
-  await pool.query(sql, [username, passwordHash]);
+  let [result] = await pool.query(sql, [username, passwordHash]);
+  let userId = result.insertId;
+  //default playlist
+  await pool.query(
+    "INSERT INTO playlists (user_id, playlist_name, is_default) VALUES (?, 'Favorites', 1)",
+    [userId]
+  );
   res.redirect("/");
 });
 
