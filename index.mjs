@@ -214,6 +214,10 @@ app.get("/song", isAuthenticated, async (req, res) => {
     const [playlists] = await pool.query(sql, [userId]);
     const [movieID] = await pool.query(movie_sql, [track.id]);
 
+    if (movieID.length === 0) {
+      return res.render("song.ejs", { track, playlists, movie: null, error: null });
+    }
+
     const response = await fetch(`http://www.omdbapi.com/?i=${movieID[0].imdb_id}&apikey=${process.env.OMDB_API_KEY}`);
     const data = await response.json();
 
