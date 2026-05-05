@@ -183,10 +183,6 @@ app.post("/searchByMovie", isAuthenticated, async (req, res) => {
   }
 });
 
-app.get("/home", isAuthenticated, (req, res) => {
-  res.render("home");
-});
-
 app.get("/song", isAuthenticated, async (req, res) => {
   try {
     const track = JSON.parse(decodeURIComponent(req.query.data));
