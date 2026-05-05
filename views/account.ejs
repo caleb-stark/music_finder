@@ -1,0 +1,65 @@
+<%- include('partials/head') %>
+<%- include('partials/nav') %>
+
+<section class="container py-4 account-section">
+	<div class="row justify-content-center">
+		<div class="col-12 col-md-8 col-lg-6">
+			<div class="card shadow-sm">
+				<div class="card-body p-4">
+					<h2 class="h4 mb-3">Account Settings</h2>
+
+					<% if (message) { %>
+						<div class="alert alert-success" role="alert"><%= message %></div>
+					<% } %>
+
+					<% if (error) { %>
+						<div class="alert alert-danger" role="alert"><%= error %></div>
+					<% } %>
+
+					<form action="/account" method="post" class="account-form">
+						<div class="mb-3">
+							<label for="username" class="form-label">Username</label>
+							<input
+								id="username"
+								name="username"
+								type="text"
+								class="form-control"
+								maxlength="20"
+								required
+								value="<%= account.UserName || '' %>"
+							/>
+						</div>
+
+						<div class="mb-3">
+							<label for="firstName" class="form-label">First Name</label>
+							<input
+								id="firstName"
+								name="firstName"
+								type="text"
+								class="form-control"
+								maxlength="40"
+								value="<%= account.FirstName || '' %>"
+							/>
+						</div>
+
+						<div class="mb-4">
+							<label for="lastName" class="form-label">Last Name</label>
+							<input
+								id="lastName"
+								name="lastName"
+								type="text"
+								class="form-control"
+								maxlength="40"
+								value="<%= account.LastName || '' %>"
+							/>
+						</div>
+
+						<button type="submit" class="btn btn-dark w-100">Save Changes</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<%- include('partials/footer') %>
