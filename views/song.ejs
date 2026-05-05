@@ -10,7 +10,7 @@
     <form action="/addToPlaylist" method="POST">
         <input type="hidden" name="spotify_id" value="<%= track.id %>">
         <input type="hidden" name="song_title" value="<%= track.name %>">
-        <input type="hidden" name="artist_name" value="<%= track.artists[0].name %>">
+        <input type="hidden" name="artist_name" value="<%= track.artists.map(a=> a.name).join(", ") %>">
 
         <div class="movie-card">
             <img class="movie-poster" src="<%=track.album.images[0].url%>"

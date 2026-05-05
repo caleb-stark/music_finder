@@ -89,6 +89,11 @@ app.post("/login", async (req, res) => {
   }
 });
 
+app.get("/logout", (req, res) => {
+  req.session.destroy();
+  res.redirect("/");
+});
+
 app.get("/account", isAuthenticated, async (req, res) => {
   const userId = req.session.user_id;
   const [rows] = await pool.query(

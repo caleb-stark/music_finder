@@ -1,15 +1,31 @@
 <%- include('partials/head') %>
 
-<form action="/login" method="post" id="loginForm">
-  Username: <input type="text" name="username" id="username" /><br />
+<div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+  <div class="card shadow-sm" style="width: 100%; max-width: 400px;">
+    <div class="card-body p-4">
+      <h2 class="text-center mb-4">Music Finder</h2>
 
-  Password: <input type="password" name="password" id="password" /><br />
+      <form action="/login" method="post" id="loginForm">
+        <div class="mb-3">
+          <label for="username" class="form-label">Username</label>
+          <input type="text" name="username" id="username" class="form-control" placeholder="Enter username" />
+        </div>
 
-  <p id="loginWarning" class="warning-message"></p>
+        <div class="mb-3">
+          <label for="password" class="form-label">Password</label>
+          <input type="password" name="password" id="password" class="form-control" placeholder="Enter password" />
+        </div>
 
-  <a href="/newUser">Create Account</a>
+        <p id="loginWarning" class="text-danger small"></p>
 
-  <button type="submit">Login</button>
-</form>
+        <button type="submit" class="btn btn-dark w-100 mb-3">Login</button>
+
+        <div class="text-center">
+          <a href="/newUser" class="text-muted small">Create an account</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
 
 <%- include('partials/footer') %>

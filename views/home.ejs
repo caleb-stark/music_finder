@@ -1,17 +1,35 @@
 <%- include('partials/head') %> <%- include('partials/nav') %>
 
-<form action="/searchBySong" method="post" id="songForm">
-  <h2>Search by Song</h2>
-  <input type="text" name="songName" id="songName" placeholder="song name" />
-  <p id="songWarning" class="warning-message"></p>
-  <button type="submit">Search</button>
-</form>
+<div class="container mt-5" style="max-width: 500px;">
 
-<form action="/searchByMovie" method="post" id="movieForm">
-  <h2>Search by Movie</h2>
-  <input type="text" name="movieName" id="movieName" placeholder="movie name" />
-  <p id="movieWarning" class="warning-message"></p>
-  <button type="submit">Search</button>
-</form>
+  <div class="card shadow-sm mb-4">
+    <div class="card-body">
+      <h2 class="card-title mb-3">Search by Song</h2>
+      <form action="/searchBySong" method="post" id="songForm">
+        <div class="input-group">
+          <input type="text" name="songName" id="songName" 
+                 class="form-control" placeholder="Song name" />
+          <button type="submit" class="btn btn-dark">Search</button>
+        </div>
+        <p id="songWarning" class="warning-message text-danger small mt-1"></p>
+      </form>
+    </div>
+  </div>
+
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h2 class="card-title mb-3">Search by Movie</h2>
+      <form action="/searchByMovie" method="post" id="movieForm">
+        <div class="input-group">
+          <input type="text" name="movieName" id="movieName" 
+                 class="form-control" placeholder="Movie name" />
+          <button type="submit" class="btn btn-dark">Search</button>
+        </div>
+        <p id="movieWarning" class="warning-message text-danger small mt-1"></p>
+      </form>
+    </div>
+  </div>
+
+</div>
 
 <%- include('partials/footer') %>

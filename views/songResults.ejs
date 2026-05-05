@@ -1,20 +1,33 @@
 <%- include('partials/head') %> <%- include('partials/nav') %>
 
-<h1>Search Results</h1>
+<div class="container mt-4" style="max-width: 600px;">
+  <h1 class="text-center mb-4">Search Results</h1>
 
-<section>
-  <h2>Songs</h2>
+  <% if (songs.length === 0) { %>
+    <p class="text-center text-muted">No songs found.</p>
+  <% } %>
+
   <% songs.forEach(song => { %>
-  <div class="result-card card p-3 mb-3 shadow-sm"
+  <div class="result-card card mb-3 shadow-sm"
       data-song-id="<%= song.id %>"
-      data-song-data="<%= encodeURIComponent(JSON.stringify(song)) %>">
-    <h3><%= song.name %></h3>
-    <% song.artists.forEach(artist => { %>
-    <p>Artist: <%= artist.name %></p>
-    <% }) %>
+      data-song-data="<%= encodeURIComponent(JSON.stringify(song)) %>"
+      style="cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;"
+      onmouseenter="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(0,0,0,0.15)'"
+      onmouseleave="this.style.transform=''; this.style.boxShadow=''">
+    <div class="row g-0 align-items-center">
+      <div class="col-auto">
+        <img src="<%= song.album?.images?.[2]?.url || '' %>"
+             alt="<%= song.name %> album art"
+             style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px 0 0 8px;">
+      </div>
+      <div class="col p-3">
+        <h6 class="mb-1 fw-bold"><%= song.name %></h6>
+        <p class="mb-0 text-muted small"><%= song.artists.map(a => a.name).join(", ") %></p>
+      </div>
+    </div>
   </div>
   <% }) %>
-</section>
+</div>
 
 <script>
     let songs = document.querySelectorAll(".result-card");

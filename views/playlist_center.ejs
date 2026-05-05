@@ -1,32 +1,39 @@
 <%- include('partials/head') %> <%- include('partials/nav') %>
-<div class="container mt-4">
+<div class="container mt-4" style="max-width: 800px;">
   <h1 class="text-center mb-4">Your Playlists</h1>
-  <div class="row g-4">
-    <% playlists.forEach(p=> { %>
-    <div class="col-md-4 col-lg-3">
-      <div class="card playlist-card shadow-sm">
+
+  <div class="row g-4 justify-content-center">
+    <% playlists.forEach(p => { %>
+    <div class="col-sm-6 col-md-4">
+      <div class="card shadow-sm h-100 position-relative">
+
         <% if (!p.is_default) { %>
-        <a href="/deleteplaylist/<%= p.playlist_id %>" class="delete-x">×</a>
+        <a href="/deleteplaylist/<%= p.playlist_id %>"
+           class="btn btn-sm btn-outline-danger position-absolute top-0 end-0 m-2"
+           style="line-height: 1; padding: 2px 7px;"
+           onclick="return confirm('Delete this playlist?')">×</a>
         <% } %>
-        <div class="card-body text-center">
-          <h5 class="card-title">
-            <%= p.playlist_name %> <% if (p.is_default) { %>
-            <span class="badge bg-primary">Default</span>
+
+        <div class="card-body text-center d-flex flex-column justify-content-center">
+          <h5 class="card-title mb-2">
+            <%= p.playlist_name %>
+            <% if (p.is_default) { %>
+            <span class="badge bg-primary ms-1">Default</span>
             <% } %>
           </h5>
-          <a href="/playlist/<%= p.playlist_id %>" class="btn btn-primary mt-2"
-            >View</a
-          >
+          <a href="/playlist/<%= p.playlist_id %>" class="btn btn-dark mt-2">View</a>
         </div>
+
       </div>
     </div>
     <% }) %>
   </div>
+
   <div class="text-center mt-4">
     <% if (playlistCount < 5) { %>
     <a href="/addplaylist" class="btn btn-success">+ Add Playlist</a>
     <% } %>
-    <span class="max-text">Max 5 playlists</span>
+    <p class="text-muted small mt-2">You can have up to 5 playlists</p>
   </div>
 </div>
 <%- include('partials/footer') %>
