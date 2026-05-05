@@ -144,10 +144,6 @@ app.get("/newUser", (req, res) => {
   res.render("newUser");
 });
 
-app.get("/newUser", (req, res) => {
-  res.render("newUser");
-});
-
 app.post("/newUser", async (req, res) => {
   let username = req.body.username;
   let password = req.body.password;
@@ -189,18 +185,6 @@ app.post("/searchByMovie", isAuthenticated, async (req, res) => {
 
 app.get("/home", isAuthenticated, (req, res) => {
   res.render("home");
-});
-
-app.get("/movie", isAuthenticated, async (req, res) => {
-  try {
-    let movieId = req.query.id || "tt12593682";
-    const response = await fetch(`https://www.omdbapi.com/?i=${movieId}&apikey=${process.env.OMDB_API_KEY}`);
-    const data = await response.json();
-
-    res.render("movie.ejs", { movie: data, error: null });
-  } catch (err) {
-    res.render("movie.ejs", { movie: null, error: "Failed to fetch movie data." });
-  }
 });
 
 app.get("/song", isAuthenticated, async (req, res) => {
