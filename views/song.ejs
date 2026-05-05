@@ -36,6 +36,22 @@
             </div>
         </div>
     </form>
+    <% if (movie) { %>
+        <div class="movie-card">
+          <img
+            class="movie-poster"
+            src="<%= movie.Poster !== 'N/A' ? movie.Poster : 'img/no-poster.png' %>"
+            alt="<%= movie.Title %> poster"
+          >
+          <div class="movie-info">
+            <h2 class="movie-title"><%= movie.Title %></h2>
+            <p class="movie-year"><%= movie.Year %></p>
+            <p class="movie-genre"><%= movie.Genre %></p>
+            <p class="movie-rated"><%= movie.Rated %></p>
+            <p class="movie-plot"><%= movie.Plot %></p>
+          </div>
+        </div>
+      <% } %>
 
 <% } %>
 
