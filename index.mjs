@@ -177,9 +177,12 @@ app.post("/searchByMovie", isAuthenticated, async (req, res) => {
     const response = await fetch(`http://www.omdbapi.com/?t=${movieTitle}&apikey=${process.env.OMDB_API_KEY}`);
     const data = await response.json();
 
-    res.render("movieResults", { movie: data, error: null });
+    let sql = `SELECT * FROM movie_songs WHERE imdb_id = ?`
+    const [rows] = await pool.query(sql, [data.imdbID]);
+
+    res.render("movieResults", { movie: data, songs: rows, error: null });
   } catch (err) {
-    res.render("movieResults", { movie: null, error: "Failed to fetch movie data." });
+    res.render("movieResults", { movie: null, songs: null, error: "Failed to fetch movie data." });
   }
 });
 
