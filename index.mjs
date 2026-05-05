@@ -177,9 +177,9 @@ app.post("/searchByMovie", isAuthenticated, async (req, res) => {
     const response = await fetch(`http://www.omdbapi.com/?t=${movieTitle}&apikey=${process.env.OMDB_API_KEY}`);
     const data = await response.json();
 
-    res.render("movie.ejs", { movie: data, error: null });
+    res.render("movieResults", { movie: data, error: null });
   } catch (err) {
-    res.render("movie.ejs", { movie: null, error: "Failed to fetch movie data." });
+    res.render("movieResults", { movie: null, error: "Failed to fetch movie data." });
   }
 });
 
