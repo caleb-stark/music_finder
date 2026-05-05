@@ -29,7 +29,20 @@
       </form>
     </div>
   </div>
-
+  <div class="card shadow-sm mt-4">
+    <div class="card-body">
+      <h2 class="card-title mb-3">Featured Movie</h2>
+      <form action="/searchByMovie" method="post">
+        <select name="movieName" class="form-select mb-3">
+          <% movies.forEach(m => { %>
+            <option value="<%= m.movie_name %>"><%= m.movie_name %></option>
+          <% }) %>
+        </select>
+        <button type="submit" class="btn btn-dark w-100">Go</button>
+        </form>
+      </div>
+    </div>
+  </div>
 </div>
 
 <%- include('partials/footer') %>

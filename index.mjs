@@ -83,7 +83,7 @@ app.post("/login", async (req, res) => {
   if (match) {
     req.session.authenticated = true;
     req.session.user_id = rows[0].UserId;
-    res.render("home");
+    res.redirect("/home");
   } else {
     res.redirect("/");
   }
@@ -166,8 +166,14 @@ app.post("/newUser", async (req, res) => {
   res.redirect("/");
 });
 
-app.get("/home", isAuthenticated, (req, res) => {
-  res.render("home");
+// app.get("/home", isAuthenticated, (req, res) => {
+//   res.render("home");
+// });
+app.get("/home", isAuthenticated, async (req, res) => {
+  const [movies] = await pool.query(
+    "SELECT DISTINCT imdb_id, movie_name FROM movie_songs ORDER BY movie_name ASC"
+  );
+  res.render("home", { movies });
 });
 
 app.post("/searchBySong", isAuthenticated, async (req, res) => {
